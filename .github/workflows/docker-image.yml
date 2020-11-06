@@ -14,7 +14,3 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build the Docker image
       run: docker build . -t sieve-connect:${{ github.sha }}
-
-    - uses: Azure/container-scan@v0
-      with:
-        image-name: sieve-connect:${{ github.sha }}
