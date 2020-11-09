@@ -3,6 +3,7 @@ FROM perl:5-buster
 LABEL maintainer="contact@sylvainmetayer.fr"
 
 COPY sieve-connect.sh /opt/sieve-connect.sh
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 ENV PATH="/opt/:${PATH}"
 ENV SIEVE_CONNECT_VERSION 0.90
@@ -13,9 +14,11 @@ WORKDIR /opt
 RUN wget -O sieve-connect.tar.gz https://github.com/philpennock/sieve-connect/archive/v$SIEVE_CONNECT_VERSION.tar.gz \
     && tar -xzf sieve-connect.tar.gz \
     && rm sieve-connect.tar.gz \
-    && mv /opt/sieve-connect-* /opt/sieve-connect
-
-RUN cpan -i Authen::SASL \
+    && mv /opt/sieve-connect-* /opt/sieve-connect \
+    && apt-get update \
+    && apt-get install -y gosu \
+    && rm -rf /var/lib/apt/lists/* \
+    && cpan -i Authen::SASL \
     && cpan -i inc::latest \
     && cpan -i CPAN::DistnameInfo \
     && cpan -i Socket6 \
@@ -30,3 +33,5 @@ RUN cpan -i Authen::SASL \
 
 WORKDIR /opt/data
 VOLUME [ "/opt/data" ]
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
